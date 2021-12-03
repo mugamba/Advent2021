@@ -10,6 +10,7 @@ namespace Task
         private static long _y = 0;
         private static long _z = 0;
 
+
         static void Main(string[] args)
         {
             var lines = File.ReadAllLines("input.txt");
@@ -18,7 +19,7 @@ namespace Task
                 ParseLine(line);
 
             Console.WriteLine("Result is forward {0}, depth {1}, total {2} ", _x, _y, _x * _y);
-            Console.ReadKey();
+            Console.Read();
         }
 
 
