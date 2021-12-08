@@ -30,11 +30,10 @@ namespace Task
         {
 
             var splits = line.Split("|");
-
-
             var numbers = splits[0].Trim().Split(" ");
             List<Tuple<String, int>> list = new List<Tuple<string, int>>();
 
+            /*Ovi su fiksni*/
             list.Add(new Tuple<string, int>(numbers.Where(o => o.Length == 7).First(), 8));
             list.Add(new Tuple<string, int>(numbers.Where(o => o.Length == 2).First(), 1));
             list.Add(new Tuple<string, int>(numbers.Where(o => o.Length == 4).First(), 4));
@@ -42,13 +41,13 @@ namespace Task
 
             foreach (var num in numbers.Where(o => o.Length == 6))
             {
-                /*Ovo je 9 duzine 6 i sadrzi sve znakove od 1*/
+                /*Ovo je 9 duzine 6 i sadrzi sve znakove od 4*/
                 if (list.Where(o => o.Item2 == 4).First().Item1.All(o => num.Contains(o)))
                 {
                     list.Add(new Tuple<string, int>(num, 9));
 
                 }
-                /*Ovp je 6 duzine 6 i sadrzi sve iz 1 i ne sadrzi sve iz 4*/
+                /*Ovo je 6 duzine 6 i ne sadrzi sve iz 1 i ne sadrzi sve iz 4*/
                 if (!list.Where(o => o.Item2 == 1).First().Item1.All(o => num.Contains(o)) && !list.Where(o => o.Item2 == 4).First().Item1.All(o => num.Contains(o)))
                 {
                     list.Add(new Tuple<string, int>(num, 6));
