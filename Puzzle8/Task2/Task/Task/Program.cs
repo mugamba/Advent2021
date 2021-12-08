@@ -12,22 +12,23 @@ namespace Task
         public static List<String> _signals = new List<String>();
         public static long _totalSum = 0;
 
-        
+
         static void Main(string[] args)
         {
             var lines = File.ReadAllLines("input.txt");
 
             foreach (var line in lines)
-                ParseLine(line);
-             
+            {
+                _totalSum += GetNumberFromDigits(ParseLineGetDigits(line));
+            }
 
             Console.WriteLine("Result is {0}", _totalSum);
             Console.ReadKey();
         }
 
-        private static void  ParseLine(String line)
+        private static List<int> ParseLineGetDigits(String line)
         {
-            
+
             var splits = line.Split("|");
 
 
@@ -47,13 +48,14 @@ namespace Task
                     list.Add(new Tuple<string, int>(num, 9));
 
                 }
-                /**/
+                /*Ovp je 6 duzine 6 i sadrzi sve iz 1 i ne sadrzi sve iz 4*/
                 if (!list.Where(o => o.Item2 == 1).First().Item1.All(o => num.Contains(o)) && !list.Where(o => o.Item2 == 4).First().Item1.All(o => num.Contains(o)))
                 {
                     list.Add(new Tuple<string, int>(num, 6));
 
                 }
 
+                //Ovo je 0 duzine 6 i ne sadrzi sve iz 4 a sadrzi sve iz 1
                 if (!list.Where(o => o.Item2 == 4).First().Item1.All(o => num.Contains(o)) && list.Where(o => o.Item2 == 1).First().Item1.All(o => num.Contains(o)))
                 {
                     list.Add(new Tuple<string, int>(num, 0));
@@ -61,83 +63,58 @@ namespace Task
 
             }
 
+            /*duzina 5, 2,3,5*/
             foreach (var num in numbers.Where(o => o.Length == 5))
             {
                 var devetka = list.Where(o => o.Item2 == 9).First().Item1;
                 var sadrziznamenki = num.Where(o => devetka.Contains(o)).Count();
+                /*9 sadrzi tocno 4 znamenke od broja 2*/
                 if (sadrziznamenki == 4)
                     list.Add(new Tuple<string, int>(num, 2));
                 else
                 {
+                    /*3 sadrzi sve znakove od 1*/
                     if (list.Where(o => o.Item2 == 1).First().Item1.All(o => num.Contains(o)))
                         list.Add(new Tuple<string, int>(num, 3));
                     else
+                        //nije 2 i nije 3 onda je 5 
                         list.Add(new Tuple<string, int>(num, 5));
                 }
             }
 
 
-            var numbers1 = splits[1].Trim().Split(" ");
-            List<int> outt = new List<int>();
+            var result = splits[1].Trim().Split(" ");
+            List<int> digits = new List<int>();
 
-            foreach (var num in numbers1)
+            foreach (var num in result)
             {
 
-               var number = list.Where(o => o.Item1.Length == num.Length && o.Item1.All(o => num.Contains(o))).Select(o => o.Item2).First();
-               outt.Add(number);
-            
+                var number = list.Where(o => o.Item1.Length == num.Length && o.Item1.All(o => num.Contains(o))).Select(o => o.Item2).First();
+                digits.Add(number);
             }
 
-            for (int i = 0; i < outt.Count; i++)
-            {
-                if (i == 0)
-                {
-                    _totalSum += 1000 * outt[i];
-                
-                }
-
-                if (i == 1)
-                {
-                    _totalSum += 100 * outt[i];
-
-
-                }
-
-                if (i == 2)
-                {
-                    _totalSum += 10 * outt[i];
-
-
-                }
-
-                if (i == 3)
-                {
-                    _totalSum += 1 * outt[i];
-
-
-                }
-
-
-
-            }
-
-
-
-
+            return digits;
         }
 
-        //private static void DecodeOutput(String outpu)
-        //{
+        public static long GetNumberFromDigits(List<int> digits)
+        {
+            long number = 0;
 
-        //    var splits = line.Split("|");
+            for (int i = 0; i < 4; i++)
+            {
+                if (i == 0)
+                    number += 1000 * digits[i];
+                if (i == 1)
+                    number += 100 * digits[i];
+                if (i == 2)
+                    number += 10 * digits[i];
+                if (i == 3)
+                    number += 1 * digits[i];
+            }
 
-        //    _signals.AddRange(splits[0].Trim().Split(" ").ToArray());
-        //    _output.AddRange(splits[1].Trim().Split(" ").ToArray());
-
-
-        //}
-
-
+            return number;
+        }
 
     }
+
 }
