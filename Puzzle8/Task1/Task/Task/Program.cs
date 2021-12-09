@@ -19,8 +19,7 @@ namespace Task
 
             foreach (var line in lines)
                 ParseLine(line);
-             
-
+            
             Console.WriteLine("Result is {0}", _output.Where(o => o.Length == 2 ||
                                                                   o.Length == 4 ||
                                                                   o.Length == 3 ||
@@ -38,19 +37,6 @@ namespace Task
 
 
         }
-
-        private static void DecodeOutput(String outpu)
-        {
-
-            var splits = line.Split("|");
-
-            _signals.AddRange(splits[0].Trim().Split(" ").ToArray());
-            _output.AddRange(splits[1].Trim().Split(" ").ToArray());
-
-
-        }
-
-
 
     }
 }
