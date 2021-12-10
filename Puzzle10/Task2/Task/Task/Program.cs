@@ -10,18 +10,14 @@ namespace Task
     {
         public static List<char> openings = new List<char> { '(', '[', '<', '{' };
         public static List<char> closings = new List<char> { ')', ']', '>', '}' };
-        public static int _y;
-        public static int _x;
-
+     
         public static List<int> wrongLines = new List<int>();
         public static List<char[]> _endings = new List<char[]>();
 
         static void Main(string[] args)
         {
             var lines = File.ReadAllLines("input.txt");
-            _x = lines.Length;
-            _y = lines.First().Length;
-   
+            
             for (int i = 0; i < lines.Length; i++)
             {
                 /*last in first out*/
@@ -42,26 +38,15 @@ namespace Task
                         }
 
                     }
-
-
                     if (j == lines[i].Length - 1)
-                    {
-
                         _endings.Add(stack.ToArray<char>().Select(o=> closings[openings.IndexOf(o)]).ToArray());
-                    
-                    }
-
-
                 }
             }
 
-            var sum = 0;
             var list = new List<long>();
             foreach (var ending in _endings)
-            {
                 list.Add(ScoreLine(ending));
-            }
-
+    
             var orderedList =  list.OrderBy(o => o).ToList();
             var count = orderedList.Count;
             var median = count / 2;
@@ -70,13 +55,11 @@ namespace Task
             Console.ReadKey();
         }
 
-
         public static long ScoreLine(char[] ending)
         {
             long sum = 0;
             for (int i = 0; i < ending.Length; i++)
             {
-
                 sum = sum * 5;
                 if (ending[i] == ')')
                     sum += 1;
@@ -89,14 +72,8 @@ namespace Task
 
                 if (ending[i] == '>')
                     sum += 4;
-
             }
-
             return sum;
-
         }
-
-       
-
     }
 }

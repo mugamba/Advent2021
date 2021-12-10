@@ -10,17 +10,12 @@ namespace Task
     {
         public static List<char> openings = new List<char> { '(', '[', '<', '{' };
         public static List<char> closings = new List<char> { ')', ']', '>', '}' };
-        public static int _y;
-        public static int _x;
-
         public static List<char> wrongendings = new List<char>();
 
         static void Main(string[] args)
         {
             var lines = File.ReadAllLines("input.txt");
-            _x = lines.Length;
-            _y = lines.First().Length;
-   
+    
             for (int i = 0; i < lines.Length; i++)
             {
                 /*last in first out*/
@@ -60,7 +55,6 @@ namespace Task
                     sum += 25137;
 
             }
-
 
             Console.WriteLine("Result is {0}", sum);
             Console.ReadKey();
