@@ -14,7 +14,6 @@ namespace Task
         public static List<Tuple<int, int>> _newFlashers = new List<Tuple<int, int>>();
         public static int _x;
         public static int _y;
-
         public static long flashes = 0;
 
         static void Main(string[] args)
@@ -29,7 +28,7 @@ namespace Task
                     _octopuses[i, j] = int.Parse(lines[i].ToCharArray()[j].ToString());
 
             var allFlasshed = false;
-            var counter = 1;
+            var counter = 0;
             while (allFlasshed == false)
             {
 
@@ -42,7 +41,6 @@ namespace Task
             Console.WriteLine("Result is {0}", counter);
             Console.ReadKey();
         }
-
 
         private static void DoStep()
         {
@@ -77,8 +75,6 @@ namespace Task
                     var x = octo.Item1;
                     var y = octo.Item2;
 
-                   // Console.WriteLine("Flashing now x={0} y={1} value {2}", x, y, _octopuses[x, y]);
-
                     DoFlashCoordinate(x - 1, y - 1);
                     DoFlashCoordinate(x, y - 1);
                     DoFlashCoordinate(x + 1, y - 1);
@@ -93,9 +89,6 @@ namespace Task
                 flashes += _forFlashing.Count;
                 _forFlashing.Clear();
                 _forFlashing.AddRange(_newFlashers.ToArray());
-
-                Console.Write(_newFlashers.ToArray());
-                Console.WriteLine();
                 _newFlashers.Clear();
 
             }
@@ -116,9 +109,8 @@ namespace Task
                     if (_octopuses[x, y] == 9)
                     {
                         _octopuses[x, y] = 0;
-                        var coord = new Tuple<int, int>(x, y);
-                        if (!_newFlashers.Contains(coord))
-                            _newFlashers.Add(coord);
+                        var kord = new Tuple<int, int>(x, y);
+                        _newFlashers.Add(kord);
                     }
                 }
 
@@ -135,18 +127,14 @@ namespace Task
                     if (_octopuses[i, j] != 0)
                     {
                         return false;
-                        
                     }
                 }
-
             }
-
             return true;
         }
 
         public static void PrintArray()
         {
-
             var builder = new StringBuilder();
             Console.WriteLine();
 
@@ -157,7 +145,6 @@ namespace Task
                 {
                     builder.Append(_octopuses[i, j]);
                 }
-
                 Console.WriteLine(builder.ToString());
             }
         }

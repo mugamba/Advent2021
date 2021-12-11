@@ -14,7 +14,6 @@ namespace Task
         public static List<Tuple<int, int>> _newFlashers = new List<Tuple<int, int>>();
         public static int _x;
         public static int _y;
-
         public static long flashes = 0;
 
         static void Main(string[] args)
@@ -28,13 +27,11 @@ namespace Task
                 for (int j = 0; j < _y; j++)
                     _octopuses[i, j] = int.Parse(lines[i].ToCharArray()[j].ToString());
 
-
             for (int i = 0; i < 100; i++)
             {
                 DoStep();
                 DoFlashes();
              //   PrintArray();
-
             }
 
             Console.WriteLine("Result is {0}", flashes);
@@ -58,25 +55,18 @@ namespace Task
                     }
                 }
             }
-
         }
-
 
         private static void DoFlashes()
         {
             while (true)
             {
-
                 if (_forFlashing.Count == 0)
                     break;
-
                 foreach (var octo in _forFlashing)
                 {
                     var x = octo.Item1;
                     var y = octo.Item2;
-
-                   // Console.WriteLine("Flashing now x={0} y={1} value {2}", x, y, _octopuses[x, y]);
-
                     DoFlashCoordinate(x - 1, y - 1);
                     DoFlashCoordinate(x, y - 1);
                     DoFlashCoordinate(x + 1, y - 1);
@@ -85,15 +75,11 @@ namespace Task
                     DoFlashCoordinate(x - 1, y + 1);
                     DoFlashCoordinate(x, y + 1);
                     DoFlashCoordinate(x + 1, y + 1);
-
                 }
 
                 flashes += _forFlashing.Count;
                 _forFlashing.Clear();
                 _forFlashing.AddRange(_newFlashers.ToArray());
-
-                Console.Write(_newFlashers.ToArray());
-                Console.WriteLine();
                 _newFlashers.Clear();
 
             }
@@ -115,18 +101,15 @@ namespace Task
                     {
                         _octopuses[x, y] = 0;
                         var coord = new Tuple<int, int>(x, y);
-                        if (!_newFlashers.Contains(coord))
-                            _newFlashers.Add(coord);
+                        _newFlashers.Add(coord);
                     }
                 }
 
             }
-
         }
 
         public static void PrintArray()
         {
-
             var builder = new StringBuilder();
             Console.WriteLine();
 
