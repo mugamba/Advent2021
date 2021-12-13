@@ -18,41 +18,32 @@ namespace Task
             _x = 655*2+1;
             _y = 447*2+1;
             _transparentPaper = new bool[_x, _y];
-
-
             foreach (var line in lines.Where(o => !o.Contains("fold")))
             {
                 if (line == String.Empty)
                     continue;
 
-
                 var splits = line.Split(",");
-
                 var x = int.Parse(splits[0]);
                 var y = int.Parse(splits[1]);
-
                 _transparentPaper[x, y] = true; 
 
             }
 
-            bool[,] _test = _transparentPaper;
-
             foreach (var foldLine in lines.Where(o => o.Contains("fold")))
             {
-
                 if (foldLine.Contains("x"))
                 {
-                    _test = FoldOnXLine(int.Parse(foldLine.Split("=")[1]), _test);
+                    _transparentPaper = FoldOnXLine(int.Parse(foldLine.Split("=")[1]), _transparentPaper);
                    
                 }
                 else
                 {
-                    _test = FoldOnYLine(int.Parse(foldLine.Split("=")[1]), _test);
+                    _transparentPaper = FoldOnYLine(int.Parse(foldLine.Split("=")[1]), _transparentPaper);
                     
                 }
             }
-
-            PrintPaper(_test);
+            PrintPaper(_transparentPaper);
             Console.ReadKey();
         }
 
@@ -72,9 +63,7 @@ namespace Task
 
                 }
                 Console.WriteLine();
-
             }
-
         }
 
         public static Int32 CountHashes(bool[,] paper)
@@ -87,10 +76,7 @@ namespace Task
 
                     if (paper[i, j])
                         count++;
-                 
-
                 }
-                
             }
             return count;
         }
@@ -100,7 +86,6 @@ namespace Task
         {
             var x = paper.GetLength(0);
             var y = paper.GetLength(1);
-
             bool[,] newArray = new bool[x, line];
 
             for (int i = 0; i < x; i++)
@@ -110,7 +95,6 @@ namespace Task
                     newArray[i, j] = paper[i, j] || paper[i, y - 1 - j];         
                 }
             }
-
             return newArray;
         }
 
@@ -118,7 +102,6 @@ namespace Task
         {
             var x = paper.GetLength(0);
             var y = paper.GetLength(1);
-
             bool[,] newArray = new bool[line, y];
 
             for (int i = 0; i < line; i++)
@@ -131,11 +114,5 @@ namespace Task
 
             return newArray;
         }
-
-
-
-
-
-
     }
 }
