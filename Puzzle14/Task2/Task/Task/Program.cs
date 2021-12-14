@@ -34,7 +34,6 @@ namespace Task
             var dictionary = new Dictionary<char, long>();
             for (int i = 0; i < _polymerTemplate.Length; i++)
             {
-
                 if (i < _polymerTemplate.Length - 1)
                 {
                     var dictionary1 = PreformStep(_polymerTemplate[i], _polymerTemplate[i + 1], 40, 40);
