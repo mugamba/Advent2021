@@ -55,22 +55,17 @@ namespace Task
 
         public static void PrintPaper(bool[,] paper)
         {
-
             for (int j = 0; j < paper.GetLength(1); j++)
                 {
                 for (int i = 0; i < paper.GetLength(0); i++)
                 {
-
                     if (paper[i, j])
                         Console.Write("#");
                     else
                         Console.Write(".");
-
                 }
                 Console.WriteLine();
-
             }
-
         }
 
         public static Int32 CountHashes(bool[,] paper)
@@ -80,13 +75,9 @@ namespace Task
             {
                 for (int i = 0; i < paper.GetLength(0); i++)
                 {
-
                     if (paper[i, j])
                         count++;
-                 
-
                 }
-                
             }
             return count;
         }
@@ -96,7 +87,6 @@ namespace Task
         {
             var x = paper.GetLength(0);
             var y = paper.GetLength(1);
-
             bool[,] newArray = new bool[x, line];
 
             for (int i = 0; i < x; i++)
@@ -114,7 +104,6 @@ namespace Task
         {
             var x = paper.GetLength(0);
             var y = paper.GetLength(1);
-
             bool[,] newArray = new bool[line, y];
 
             for (int i = 0; i < line; i++)
@@ -124,7 +113,6 @@ namespace Task
                     newArray[i, j] = paper[i, j] || paper[x-1-i, j];
                 }
             }
-
             return newArray;
         }
 
