@@ -36,7 +36,7 @@ namespace Task
             {
                 if (i < _polymerTemplate.Length - 1)
                 {
-                    var dictionary1 = PreformStep(_polymerTemplate[i], _polymerTemplate[i + 1], 40, 40);
+                    var dictionary1 = RecurseToken(_polymerTemplate[i], _polymerTemplate[i + 1], 40, 40);
                     dictionary = dictionary.Concat(dictionary1).GroupBy(
                                 kvp => kvp.Key,
                                 (key, kvps) => new { Key = key, Value = kvps.Sum(kvp => kvp.Value) })
@@ -59,7 +59,7 @@ namespace Task
         }
 
 
-        public static Dictionary<char, long> PreformStep(char previous, char next, int depth, int maxdepth)
+        public static Dictionary<char, long> RecurseToken(char previous, char next, int depth, int maxdepth)
         {
             if (depth == 0)
             {
@@ -81,8 +81,8 @@ namespace Task
 
             var newdepth = depth - 1;
 
-            var dict1 = PreformStep(previous, mid, newdepth, maxdepth);
-            var dict2 = PreformStep(mid, next, newdepth, maxdepth);
+            var dict1 = RecurseToken(previous, mid, newdepth, maxdepth);
+            var dict2 = RecurseToken(mid, next, newdepth, maxdepth);
             var newdict = dict1.Concat(dict2).GroupBy(
                 kvp => kvp.Key,
                 (key, kvps) => new { Key = key, Value = kvps.Sum(kvp => kvp.Value) })
