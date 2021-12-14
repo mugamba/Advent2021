@@ -37,7 +37,7 @@ namespace Task
 
                 if (i < _polymerTemplate.Length - 1)
                 {
-                    var dictionary1 = PreformStep(_polymerTemplate[i], _polymerTemplate[i + 1], 10);
+                    var dictionary1 = PreformStep(_polymerTemplate[i], _polymerTemplate[i + 1], 40, 40);
                     dictionary = dictionary.Concat(dictionary1).GroupBy(
                                 kvp => kvp.Key,
                                 (key, kvps) => new { Key = key, Value = kvps.Sum(kvp => kvp.Value) })
@@ -45,6 +45,9 @@ namespace Task
 
                 }
             }
+            /*adding last because recursion removes it between tokens*/
+            dictionary[_polymerTemplate.Last()]++;
+
 
             var max = dictionary.Select(o => o.Value).Max();
             var min = dictionary.Select(o => o.Value).Min();
@@ -57,7 +60,7 @@ namespace Task
         }
 
 
-        public static Dictionary<char, long> PreformStep(char previous, char next, int depth)
+        public static Dictionary<char, long> PreformStep(char previous, char next, int depth, int maxdepth)
         {
             if (depth == 0)
             {
@@ -79,16 +82,18 @@ namespace Task
 
             var newdepth = depth - 1;
 
-            var dict1 = PreformStep(previous, mid, newdepth);
-            var dict2 = PreformStep(mid, next, newdepth);
-
-            
+            var dict1 = PreformStep(previous, mid, newdepth, maxdepth);
+            var dict2 = PreformStep(mid, next, newdepth, maxdepth);
             var newdict = dict1.Concat(dict2).GroupBy(
                 kvp => kvp.Key,
                 (key, kvps) => new { Key = key, Value = kvps.Sum(kvp => kvp.Value) })
             .ToDictionary(x => x.Key, x => x.Value);
             /*We added mid tow times*/
             newdict[mid]--;
+
+            /*removing the last because its already in new token*/
+            if (depth == maxdepth)
+                newdict[next]--;
 
             _memo.Add(key, newdict);
             return _memo[key];
