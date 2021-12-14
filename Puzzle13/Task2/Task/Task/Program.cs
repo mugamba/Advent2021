@@ -35,12 +35,10 @@ namespace Task
                 if (foldLine.Contains("x"))
                 {
                     _transparentPaper = FoldOnXLine(int.Parse(foldLine.Split("=")[1]), _transparentPaper);
-                   
                 }
                 else
                 {
                     _transparentPaper = FoldOnYLine(int.Parse(foldLine.Split("=")[1]), _transparentPaper);
-                    
                 }
             }
             PrintPaper(_transparentPaper);
@@ -50,9 +48,8 @@ namespace Task
 
         public static void PrintPaper(bool[,] paper)
         {
-
             for (int j = 0; j < paper.GetLength(1); j++)
-                {
+            { 
                 for (int i = 0; i < paper.GetLength(0); i++)
                 {
 
@@ -73,7 +70,6 @@ namespace Task
             {
                 for (int i = 0; i < paper.GetLength(0); i++)
                 {
-
                     if (paper[i, j])
                         count++;
                 }
