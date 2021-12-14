@@ -35,7 +35,7 @@ namespace Task
 
             }
 
-            for (int i = 0; i < 40; i++)
+            for (int i = 0; i < 10; i++)
             {
                 _polymerTemplate = PreformStep(_polymerTemplate);
             
@@ -53,6 +53,8 @@ namespace Task
 
             var result = max - min;
 
+            Console.WriteLine("Max is {0}", max);
+            Console.WriteLine("Min is {0}", min);
             Console.WriteLine("Result is {0}", result);
             Console.ReadKey();
         }
