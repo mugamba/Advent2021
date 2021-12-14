@@ -87,7 +87,7 @@ namespace Task
                 kvp => kvp.Key,
                 (key, kvps) => new { Key = key, Value = kvps.Sum(kvp => kvp.Value) })
             .ToDictionary(x => x.Key, x => x.Value);
-            /*We added mid tow times*/
+            /*We added mid two times*/
             newdict[mid]--;
 
             /*removing the last because its already in new token*/
