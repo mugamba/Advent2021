@@ -8,107 +8,127 @@ namespace Task
 {
     class Program
     {
-        public static int[,] _heightMap;
+        public static int[,] _chitonMap;
         public static int _x;
         public static int _y;
-        public static Dictionary<Tuple<int, int>, List<Tuple<int, int>>> _lowPointsBasins 
-            = new Dictionary<Tuple<int, int>, List<Tuple<int, int>>>();
+        public static long _minsum = int.MaxValue;
+
+        public static Dictionary<Tuple<int, int>, int> _memo = new Dictionary<Tuple<int, int>, int>();
 
 
         static void Main(string[] args)
         {
             var lines = File.ReadAllLines("input.txt");
-            _x = lines.Length;
-            _y = lines.First().Length;
-            _heightMap = new int[_x, _y];
+
+            var linelength = lines.First().Length;
+            var numofLines = lines.Length;
+
+            _x = lines.Length*5;
+            _y = lines.First().Length*5;
+            _chitonMap = new int[_x, _y];
+
+
             for (int i = 0; i < _x; i++)
                 for (int j = 0; j < _y; j++)
                 {
-                    _heightMap[i, j] = int.Parse(lines[i].ToCharArray()[j].ToString());
+                    var num = (int.Parse(lines[i % numofLines].ToCharArray()[j % linelength].ToString()));
+                    num = num + (i / linelength) + (j / linelength);
+                    num = num % 9 == 0 ? 9 : num % 9;
+                    _chitonMap[j, i] = num;
                 }
 
-            GetLowPoints();
-            foreach (var position in _lowPointsBasins.Keys)
-                FindBasins(position, position);
-       
-            var top3basins =_lowPointsBasins.Select(o => o.Value.Count).ToList().OrderByDescending(o => o).Take(3).ToArray();
 
-            Console.WriteLine("Result is {0}", top3basins[0]* top3basins[1]* top3basins[2]);
+            FindChitons(new Tuple<int, int>(0, 0), 0);
+            Console.WriteLine("Result is {0}", _minsum - _chitonMap[0, 0]);
             Console.ReadKey();
+         
         }
 
-        /*Getting low points and putting them to dictionary*/
-        private static void GetLowPoints()
+
+        public static void PrintArray()
         {
             for (int i = 0; i < _x; i++)
             {
                 for (int j = 0; j < _y; j++)
-                {
-                    var up = int.MaxValue;
-                    var down = int.MaxValue;
-                    var left = int.MaxValue;
-                    var right = int.MaxValue;
-                    var current = _heightMap[i, j];
+                    Console.Write(_chitonMap[j, i]);
 
-                    if (i - 1 >= 0)
-                        up = _heightMap[i - 1, j];
-                    if (i + 1 < _x)
-                        down = _heightMap[i + 1, j];
-                    if (j - 1 >= 0)
-                        left = _heightMap[i, j - 1];
-                    if (j + 1 < _y)
-                        right = _heightMap[i, j + 1];
-
-                    /*this is low point*/
-                    if (current < up && current < down && current < left && current < right)
-                        _lowPointsBasins.Add(new Tuple<int, int>(i, j), new List<Tuple<int, int>>());
-                }
+                Console.WriteLine();
             }
         }
-        
-        /*Rekurzija dodaje basin u listu za pojedini low point, i rekurzivno traži sljedeće basine */
-        public static void FindBasins(Tuple<int, int> key, Tuple<int, int> nextbasin)
+
+        public static void FindChitons(Tuple<int, int> currentBasin,  int sum)
         {
-            _lowPointsBasins[key].Add(nextbasin);
+            sum += _chitonMap[currentBasin.Item1, currentBasin.Item2];
 
-            var up = 9;
-            var upCordinate = new Tuple<int, int>(nextbasin.Item1 - 1, nextbasin.Item2);
-            var down = 9;
-            var downCordinate = new Tuple<int, int>(nextbasin.Item1 + 1, nextbasin.Item2);
-            var left = 9;
-            var leftCordinate = new Tuple<int, int>(nextbasin.Item1, nextbasin.Item2 - 1);
-            var right = 9;
-            var rightCordinate = new Tuple<int, int>(nextbasin.Item1, nextbasin.Item2 + 1);
+            if (sum > _minsum)
+                return;
+
+            if (!_memo.ContainsKey(currentBasin))
+                _memo.Add(currentBasin, sum);
+
+            else
+            {
+                if (sum <_memo[currentBasin])
+                    _memo[currentBasin] = sum;
+                else
+                    return; 
+            }
+          
+            if (currentBasin.Item1 == _x-1 && currentBasin.Item2 == _y-1)
+            {
+                if (sum < _minsum)
+                    _minsum = sum;
+
+                return;
+            }
+
+            var downC = new Tuple<int, int>(currentBasin.Item1, currentBasin.Item2+1);
+            var rightC = new Tuple<int, int>(currentBasin.Item1+1, currentBasin.Item2);
+            var upC = new Tuple<int, int>(currentBasin.Item1, currentBasin.Item2 - 1);
+            var leftC = new Tuple<int, int>(currentBasin.Item1 -1, currentBasin.Item2);
+
+            var down = int.MaxValue;
+            var right = int.MaxValue;
+            var up = int.MaxValue;
+            var left = int.MaxValue;
+
+            if (currentBasin.Item2 + 1 >= 0 && currentBasin.Item2+1 < _y)
+                down = _chitonMap[currentBasin.Item1, currentBasin.Item2+1];
+            if (currentBasin.Item1 + 1 >= 0 && currentBasin.Item1 + 1 < _x )
+                right = _chitonMap[currentBasin.Item1+1, currentBasin.Item2];
+            if (currentBasin.Item2 - 1 >= 0 && currentBasin.Item2 - 1 < _y)
+                up = _chitonMap[currentBasin.Item1, currentBasin.Item2 - 1];
+            if (currentBasin.Item1 - 1 >= 0 && currentBasin.Item1 - 1 < _x)
+                left = _chitonMap[currentBasin.Item1 -  1, currentBasin.Item2];
 
 
-            if (nextbasin.Item1 - 1 >= 0)
-                up = _heightMap[nextbasin.Item1 - 1, nextbasin.Item2];
-            if (nextbasin.Item1 + 1 < _x)
-                down = _heightMap[nextbasin.Item1 + 1, nextbasin.Item2];
-            if (nextbasin.Item2 - 1 >= 0)
-                left = _heightMap[nextbasin.Item1, nextbasin.Item2 - 1];
-            if (nextbasin.Item2 + 1 < _y)
-                right = _heightMap[nextbasin.Item1, nextbasin.Item2 + 1];
 
 
-            if (up != 9 && !_lowPointsBasins[key].Contains(upCordinate))
-                FindBasins(key, upCordinate);
+            if (down != int.MaxValue)
+            {
+                FindChitons(downC, sum);
+            }
 
-            if (down != 9 && !_lowPointsBasins[key].Contains(downCordinate))
-                FindBasins(key, downCordinate);
+            if (right != int.MaxValue)
+            {
+                FindChitons(rightC, sum);
+            }
 
-            if (left != 9 && !_lowPointsBasins[key].Contains(leftCordinate))
-                FindBasins(key, leftCordinate);
+            if (up != int.MaxValue)
+            {
+                FindChitons(upC, sum);
+            }
 
-            if (right != 9 && !_lowPointsBasins[key].Contains(rightCordinate))
-                FindBasins(key, rightCordinate);
-            
+            if (left != int.MaxValue)
+            {
+                FindChitons(leftC, sum);
+            }
+
         }
 
-
-
-
-
-
+        private static int MinimalDistanceSum(Tuple<int, int> currentBasin, Tuple<int, int> lastBasin)
+        {
+            return (lastBasin.Item1 - currentBasin.Item1) + (lastBasin.Item2 - currentBasin.Item2);
+        }
     }
 }
