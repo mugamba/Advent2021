@@ -30,7 +30,7 @@ namespace Task
 
 
             for (int x = 0; x < _validRangeX.Item2+1; x++)
-                for (int y = -500; y < 500; y++)
+                for (int y = _validRangeY.Item1; y < Math.Abs(_validRangeY.Item1)+1; y++)
                 {
                     var nextX = 0; var nextY = 0; var height = 0;
                     var stepX = x;
@@ -58,6 +58,11 @@ namespace Task
                             stepX--;
                     }
                 }
+
+
+            var max = _validShots.Select(O => O.Item2).Max();
+            var min =_validShots.Select(O => O.Item2).Min();
+
 
             Console.WriteLine("Result is {0} ", _validShots.Count());
         }
