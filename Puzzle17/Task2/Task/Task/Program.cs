@@ -32,38 +32,29 @@ namespace Task
             for (int x = 0; x < _validRangeX.Item2+1; x++)
                 for (int y = _validRangeY.Item1; y < Math.Abs(_validRangeY.Item1)+1; y++)
                 {
-                    var nextX = 0; var nextY = 0; var height = 0;
-                    var stepX = x;
-                    var stepY = y;
+                    var nextX = 0; var nextY = 0; 
+                    var stepX = x; var stepY = y;
                     while (true)
                     {
                         if (_validRangeX.Item1 <= nextX && _validRangeX.Item2 >= nextX
                             && _validRangeY.Item1 <= nextY && _validRangeY.Item2 >= nextY)
                         {
-
+                            /*ako je valid shot dodamo i brejkamo*/
                             _validShots.Add(new Tuple<int, int>(x, y));
                             break;
                         }
 
+                        /*Ako je promašio total jope brejkamo*/
                         if (nextY < _validRangeY.Item1 || nextX > _validRangeX.Item2)
                             break;
 
                         nextX += stepX; nextY += stepY;
-                        if (stepY > 0)
-                        {
-                            height += stepY;
-                        }
+                        /*y uvijek pada a x samo dok ne dođe do 0*/
                         stepY--;
                         if (stepX > 0)
                             stepX--;
                     }
                 }
-
-
-            var max = _validShots.Select(O => O.Item2).Max();
-            var min =_validShots.Select(O => O.Item2).Min();
-
-
             Console.WriteLine("Result is {0} ", _validShots.Count());
         }
           
