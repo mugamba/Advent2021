@@ -27,8 +27,8 @@ namespace Task
             _validRangeY = new Tuple<int, int>(int.Parse(yline.Replace("y=", "").Split("..")[0]), int.Parse(yline.Split("..")[1]));
 
 
-            for (int x = 0; x < _validRangeX.Item1; x++)
-                for (int y = 0; y < _validRangeX.Item1; y++)
+            for (int x = 0; x < _validRangeX.Item1+1; x++)
+                for (int y = _validRangeY.Item1; y < Math.Abs(_validRangeX.Item1)+1; y++)
                 {
                     var nextX = 0; var nextY = 0; var height = 0;
                     var stepX = x; 
@@ -38,8 +38,7 @@ namespace Task
                         if (_validRangeX.Item1 <= nextX && _validRangeX.Item2 >= nextX
                             && _validRangeY.Item1 <= nextY && _validRangeY.Item2 >= nextY)
                         {
-
-                            if (height > _maxHeight)
+                              if (height > _maxHeight)
                                 _maxHeight = height;
 
                         }
@@ -57,8 +56,8 @@ namespace Task
                             stepX--;
                     }
                 }
+            Console.WriteLine("Result is {0} ", _maxHeight);
+            Console.ReadKey();
         }
-   
-    
     }
 }
