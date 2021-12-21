@@ -77,14 +77,31 @@ namespace Task
                 }
             }
 
-            List<Tuple<int, int, int>> beacons = new List<Tuple<int, int, int>>();
             foreach (var scan in _scanners)
-                beacons = beacons.Union(scan._beaconsList).ToList();
+                foreach (var scan1 in _scanners)
+                    if (scan != scan1)
+                    {
+                        scan._menhetanDistances.Add(scan1, Distance(scan, scan1));
+                    }
 
-            Console.WriteLine("Result is {0}", beacons.Count);
+
+            foreach (var sc in _scanners)
+            {
+                Console.WriteLine("Result is {0}  maxdis {1}",sc._name, sc._menhetanDistances.Select(o=>o.Value).Max()); 
+            }
             Console.ReadKey();
             
 
+        }
+
+        private static int Distance(Scanner scannerSource, Scanner toCompare)
+        {
+            var x = Math.Abs(scannerSource._offset.Item1 - toCompare._offset.Item1);
+            var y = Math.Abs(scannerSource._offset.Item2 - toCompare._offset.Item2);
+            var z = Math.Abs(scannerSource._offset.Item3 - toCompare._offset.Item3);
+
+
+            return x + y + z;
         }
 
         private static Scanner IsMatch(Scanner scannerSource, Scanner toCompare)
@@ -192,7 +209,7 @@ namespace Task
         public List<Scanner> _comparedWith = new List<Scanner>();
         public Tuple<int, int, int> _offset;
         public List<Tuple<int, int, int, int>>_rotatedList = new ();
-        
+        public Dictionary<Scanner, int> _menhetanDistances = new Dictionary<Scanner, int>();
 
         public void Rotate()
         {
