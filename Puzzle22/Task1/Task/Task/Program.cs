@@ -22,9 +22,7 @@ namespace Task
                 var cubo = new Cuboid();
                 var splits = line.Split(" ");
                 cubo.opp = splits[0];
-
-                 var nextssplits = splits[1].Split(",");
-
+                var nextssplits = splits[1].Split(",");
                 var stringx = nextssplits[0].Replace("x=", "");
                 var splitx = stringx.Split("..");
                 cubo.leftx = int.Parse(splitx[0]);
@@ -44,99 +42,39 @@ namespace Task
             }
 
 
-            _totalCubo = _cuboids.First();
 
-            foreach (var cubo in _cuboids)
-            {
-                _totalCubo = Operate(_totalCubo, cubo);
-            }
 
+          
+
+            //on x = -18..26, y = -33..15, z = -7..46
+            //off x = -40..-22, y = -38..-28, z = 23..41
+            //-18..26 -27..15 -7..22 
+
+
+            Console.WriteLine("Result is {0}", _totalCubo.PointsInCube());
         }
 
-        public static Cuboid Operate(Cuboid input, Cuboid next)
-        {
-            var ret = new Cuboid();
-            ret.leftx = input.leftx;
-            ret.rightx = input.rightx;
-            ret.lefty = input.lefty;
-            ret.righty = input.righty;
-            ret.leftz = input.leftz;
-            ret.rightz = input.rightz;
+       
+          
 
-
-            if (next.opp == "on")
-            {
-                if (next.leftx < input.leftx)
-                    ret.leftx = next.leftx;
-
-                if (next.lefty < input.lefty)
-                    ret.lefty = next.lefty;
-
-                if (next.leftz < input.leftz)
-                    ret.leftz = next.leftz;
-
-                if (next.rightx > input.rightx)
-                    ret.rightx = next.rightx;
-
-                if (next.righty > input.righty)
-                    ret.righty = next.righty;
-
-                if (next.rightz > input.rightz)
-                    ret.rightz = next.rightz;
-            }
-
-            if (next.opp == "off")
-            {
-                if (next.leftx <= input.leftx && next.rightx >= input.rightx)                    
-                {
-                    ret.leftx = 0;
-                    ret.rightx = 0;
-                }
-
-                if (next.leftx <= input.leftx && next.rightx < input.rightx)
-                    ret.leftx = next.rightx + 1;
-
-                if (next.leftx > input.leftx && next.rightx >= input.rightx)
-                    ret.rightx = next.leftx -1;
-
-
-                if (next.lefty <= input.lefty && next.righty >= input.righty)                    
-                {
-                    ret.lefty = 0;
-                    ret.righty = 0;
-                }
-
-                if (next.lefty <= input.lefty && next.righty < input.righty)
-                    ret.lefty = next.righty + 1;
-
-                if (next.lefty > input.lefty && next.righty >= input.righty)
-                    ret.righty = next.lefty - 1;
-
-                if (next.leftz <= input.leftz && next.rightz >= input.rightz)                    
-                {
-                    ret.leftz = 0;
-                    ret.rightz = 0;
-                }
-
-                if (next.leftz <= input.leftz && next.rightz < input.rightz)
-                    ret.leftz = next.rightz + 1;
-
-                if (next.leftz > input.leftz && next.rightz >= input.rightz)
-                    ret.rightz = next.leftz - 1;
-
-            }
-
-
-
-
+            
+            Console.WriteLine("Result {0}", ret.ToString());
             return ret;
         }
 
 
 
-       
 
 
+        public static IList<Cuboid> OperateOnX(Cuboid input, Cuboid next)
+        { 
+            if (input.leftx >= next.leftx && input.rightx
+                
+                
+                )
+
+        
+        }
 
     }
 
@@ -156,6 +94,14 @@ namespace Task
             return String.Format("x={0}..{1}, y={2}..{3}, z={4}..{5}", leftx, rightx, lefty, righty, leftz, rightz);
         
         }
+
+        public long PointsInCube()
+        {
+            return Math.Abs(leftx - rightx) * Math.Abs(lefty - righty) * Math.Abs(leftz - rightz);
+
+        }
+
+
 
     }
 
