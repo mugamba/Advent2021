@@ -12,57 +12,57 @@ namespace Task
     class Program
     {
 
-        IList<AmphipodGame> _validGamePlayed = new List<AmphipodGame>();
+        public static IList<AmphipodGame> _validGamePlayed = new List<AmphipodGame>();
 
         static void Main(string[] args)
         {
             var game = new AmphipodGame();
 
             var a1 = new Player();
-            a1._type = 1;
+            a1._type = 1; a1._name = "a1";
             var a2 = new Player();
-            a2._type = 1;
+            a2._type = 1; a2._name = "a2";
             var b1 = new Player();
-            b1._type = 10;
+            b1._type = 10; b1._name = "b1";
             var b2 = new Player();
-            b2._type = 10;
+            b2._type = 10; b2._name = "b2";
             var c1 = new Player();
-            c1._type = 100;
+            c1._type = 100; c1._name = "c1";
             var c2 = new Player();
-            c2._type = 100;
+            c2._type = 100; c2._name = "c2";
             var d1 = new Player();
-            d1._type = 1000;
+            d1._type = 1000; d1._name = "d1";
             var d2 = new Player();
-            d1._type = 1000;
+            d2._type = 1000; d2._name = "d2";
 
             var houseA = new House();
-            houseA._house[0] = b1;
-            houseA._house[1] = a1;
+            houseA._house[0] = d1;
+            houseA._house[1] = c1;
             houseA._houseEntry = 2;
 
             var houseB = new House();
-            houseB._house[0] = c1;
-            houseB._house[1] = d1;
+            houseB._house[0] = b1;
+            houseB._house[1] = a1;
             houseB._houseEntry = 4;
 
             var houseC = new House();
-            houseC._house[0] = b2;
-            houseC._house[1] = c2;
+            houseC._house[0] = c2;
+            houseC._house[1] = d2;
             houseC._houseEntry = 6;
 
             var houseD = new House();
-            houseD._house[0] = d2;
-            houseD._house[1] = a2;
+            houseD._house[0] = a2;
+            houseD._house[1] = b2;
             houseD._houseEntry = 8;
             
-            a1._destinationHouse = houseA; a1._currentHouse = houseA;
+            a1._destinationHouse = houseA; a1._currentHouse = houseB;
             a2._destinationHouse = houseA; a2._currentHouse = houseD;
-            b1._destinationHouse = houseB; b1._currentHouse = houseA;
-            b2._destinationHouse = houseB; b2._currentHouse = houseC;
-            c1._destinationHouse = houseC; c1._currentHouse = houseB;
+            b1._destinationHouse = houseB; b1._currentHouse = houseB;
+            b2._destinationHouse = houseB; b2._currentHouse = houseD;
+            c1._destinationHouse = houseC; c1._currentHouse = houseA;
             c2._destinationHouse = houseC; c2._currentHouse = houseC;
-            d1._destinationHouse = houseD; d1._currentHouse = houseB;
-            d2._destinationHouse = houseD; d2._currentHouse = houseD;
+            d1._destinationHouse = houseD; d1._currentHouse = houseA;
+            d2._destinationHouse = houseD; d2._currentHouse = houseC;
             game._players.AddRange(new[] { a1, a2, b1, b2, c1, c2, d1, d2 });
 
             a1._game = game; a2._game = game;
@@ -70,38 +70,59 @@ namespace Task
             b1._game = game; b2._game = game;
             d1._game = game; d2._game = game;
 
+            game._houseA = houseA; game._houseB = houseB;
+            game._houseC = houseC; game._houseD = houseD;
 
-            PlayAmphiodGame(game);
+
+            PlayAmphiodGame(game, int.MaxValue, int.MaxValue);
+
+           var value = _validGamePlayed.Select(o => o._energy).Min();
+
         }
 
 
-        public static AmphipodGame PlayAmphiodGame(AmphipodGame currentGame)
+        public static void PlayAmphiodGame(AmphipodGame currentGame, int playerIndex, int actionIndex)
         {
             currentGame.CalculateAllPossibleActions();
 
-            if (currentGame._players.All(o => o.ValidPosition))
-                return currentGame;
-
-            if (currentGame._possibleActions.Count == 0)
-                return null;
-
-            foreach (var action in currentGame._possibleActions.SelectMany(d => d.Value, (d, r) => new { d.Key, r.Item1, r.Item2 }))
+            if (playerIndex != int.MaxValue && actionIndex != int.MaxValue)
             {
-                if (action.Key != null && action.Item1 != null)
-                    action.Item1.Invoke(action.Key, action.Item2);
+                var action = currentGame._players[playerIndex]._possibleActions[actionIndex];
 
-                var game = PlayAmphiodGame(currentGame.Copy<AmphipodGame>());
-                if (game == null)
-                    continue;
-
+                if (action.Item1 != null)
+                    action.Item1.Invoke(currentGame._players[playerIndex], action.Item2);
             }
 
+            currentGame.CalculateAllPossibleActions();
+
+            //currentGame.PrintCurrentGame();
 
             if (currentGame._players.All(o => o.ValidPosition))
-                return currentGame;
+            {
+                _validGamePlayed.Add(currentGame);
+                return;
+            }
+
+            if (currentGame.NoPosibbleActions())
+                return;
+
+            for (int i = 0; i < currentGame._players.Count; i++)
+            {
+                for (int j = 0; j < currentGame._players[i]._possibleActions.Count; j++)
+                {
+                    var copyOfGame = currentGame.Copy<AmphipodGame>();
+                    PlayAmphiodGame(copyOfGame, i, j);
+                    
+                }
+
+            }
+            currentGame.CalculateAllPossibleActions();
+         
+            if (currentGame._players.All(o => o.ValidPosition))
+                return;
 
 
-            return null;
+            return;
 
         }
 
@@ -111,34 +132,108 @@ namespace Task
 
     public class AmphipodGame
     {
-        public Dictionary<Player,  List<Tuple<Action<Player, int>, int>>> _possibleActions = new Dictionary<Player, List<Tuple<Action<Player, int>, int>>>(); 
         public Player[] _hallway = new Player[11];
         public int _energy;
         public List<Player> _players = new List<Player>();
+        public House _houseA;
+        public House _houseB;
+        public House _houseC;
+        public House _houseD;
+
+        public Boolean NoPosibbleActions()
+        {
+            return _players.All(o => o._possibleActions.Count == 0);
+        }
+
 
         internal void CalculateAllPossibleActions()
         {
-            _possibleActions.Clear();
             foreach (var p in _players)
                 p.CalculateMoves();
         }
+
+
+        public void PrintCurrentGame()
+        {
+            for (int i = 0; i < _hallway.Length; i++)
+            {
+                if (_hallway[i] != null)
+                    Console.Write(_hallway[i].ToString());
+                else
+                    Console.Write(".");
+
+            }
+            Console.WriteLine();
+
+            Console.Write("House a->");
+            foreach (var p in _houseA._house)
+            {
+                if (p != null)
+                    Console.Write(p.ToString());
+                else
+                    Console.Write(".");
+            }
+            Console.WriteLine();
+
+            Console.Write("House b->");
+            foreach (var p in _houseB._house)
+            {
+                if (p != null)
+                    Console.Write(p.ToString());
+                else
+                    Console.Write(".");
+            }
+
+            Console.WriteLine();
+
+            Console.Write("House c->");
+            foreach (var p in _houseC._house)
+            {
+                if (p != null)
+                    Console.Write(p.ToString());
+                else
+                    Console.Write(".");
+            }
+
+            Console.WriteLine();
+
+            Console.Write("House d->");
+            foreach (var p in _houseD._house)
+            {
+                if (p != null)
+                    Console.Write(p.ToString());
+                else
+                    Console.Write(".");
+            }
+
+            Console.WriteLine();
+
+
+
+        }
+
     }
 
     public class Player
     {
+        public String _name;
         public AmphipodGame _game;
         public int _type;
         public House _destinationHouse;
         public House _currentHouse;
         public Boolean ValidPosition = false;
+        public List<Tuple<Action<Player, int>, int>> _possibleActions = new List<Tuple<Action<Player, int>, int>>();
+
+        public override string ToString()
+        {
+            return _name;
+        }
+
+
 
         public void CalculateMoves()
         {
-            if (_game._possibleActions.ContainsKey(this))
-                _game._possibleActions[this].Clear();
-            else
-                _game._possibleActions.Add(this, new List<Tuple<Action<Player, int>, int>>());
-
+            _possibleActions.Clear();
 
             var indexinDestination = Array.IndexOf(_destinationHouse._house, this);
             if (indexinDestination == 1)
@@ -155,19 +250,18 @@ namespace Task
                     return;
                 }//no nedd for moves 
             }
-
             var inSomehouse = Array.IndexOf(_currentHouse._house, this);
             if (inSomehouse == -1)
             {
+                /*iam in hallway and cannt move*/
+                if (_game._hallway.Contains(this) && _destinationHouse._house[0] != null)
+                    return;
 
-                /*iam in hallway and canot move*/
-                if (_game._hallway.Contains(this) && _destinationHouse._house[0] != null && _destinationHouse._house[1] != null)
+                if (_game._hallway.Contains(this) && _destinationHouse._house[1] != null && _destinationHouse._house[1]._type != this._type)
                     return;
 
                 var _myHouseEmpty = _destinationHouse._house[0] == null && _destinationHouse._house[1] == null;
                 var _myHouseEmptySpot1 = _destinationHouse._house[1] != null && _destinationHouse._house[0] == null && _destinationHouse._house[1]._type == _type;
-
-
 
                 /*iam in hallway and my house empty*/
                 if (_game._hallway.Contains(this) && (_myHouseEmpty || _myHouseEmptySpot1))
@@ -182,7 +276,7 @@ namespace Task
                             return;
                         else
 
-                            _game._possibleActions[this].Add(new Tuple<Action<Player, int>, int>((i, o) =>
+                            _possibleActions.Add(new Tuple<Action<Player, int>, int>((i, o) =>
                             MoveFromHallwayToHouse(this, _myHouseEmptySpot1 ? 0 : 1), _myHouseEmptySpot1 ? 0 : 1));
                     }
                     else
@@ -192,24 +286,54 @@ namespace Task
                         if (someoneOnPath)
                             return;
                         else
-                            _game._possibleActions[this].Add(new Tuple<Action<Player, int>, int>(
+                            _possibleActions.Add(new Tuple<Action<Player, int>, int>(
                                 (i, o) => MoveFromHallwayToHouse(this, _myHouseEmptySpot1 ? 0 : 1), _myHouseEmptySpot1 ? 0 : 1));
                          
                     }
                 }
             }
-            /*FromHouseToHallway*/
+            /*FromHouseToHouseHallway*/
             else
             {
                 /*cant get out of house*/
                 if (inSomehouse == 1 && _currentHouse._house[0] != null)
                     return;
 
+                var _myHouseEmpty = _destinationHouse._house[0] == null && _destinationHouse._house[1] == null;
+                var _myHouseEmptySpot1 = _destinationHouse._house[1] != null && _destinationHouse._house[0] == null && _destinationHouse._house[1]._type == _type;
+
+                if ((_myHouseEmpty || _myHouseEmptySpot1))
+                {
+                    if (_currentHouse._houseEntry < _destinationHouse._houseEntry)
+                    {
+                        var skip = _currentHouse._houseEntry;
+                        var take = _destinationHouse._houseEntry - _currentHouse._houseEntry;
+                        /*on the way*/
+                        var someoneOnPath = _game._hallway.Skip(skip).Take(take).Any(o => o != null);
+                        if (!someoneOnPath)
+                            _possibleActions.Add(new Tuple<Action<Player, int>, int>((p, o) => MoveFromHouseToHouse(this, _myHouseEmptySpot1 ? 0 : 1), _myHouseEmptySpot1 ? 0 : 1));
+
+                    }
+                    else
+                    {
+                        var skip = _destinationHouse._houseEntry;
+                        var take = _currentHouse._houseEntry - _destinationHouse._houseEntry;
+                        /*on the way*/
+                        var someoneOnPath = _game._hallway.Skip(skip).Take(take).Any(o => o != null);
+                        if (!someoneOnPath)
+                            _possibleActions.Add(new Tuple<Action<Player, int>, int>((p, o) => MoveFromHouseToHouse(this, _myHouseEmptySpot1 ? 0 : 1), _myHouseEmptySpot1 ? 0 : 1));
+
+                    }
+
+
+                }
+
                 //FreeSpotsinHallway no player and not house entries//
                var list = _game._hallway.Where((p, i) => p == null)
                     .Select((o, i) => i)
                     .Where(i => i != 2 && i != 4 && i != 6 && i != 8).ToList();
 
+            
 
                 foreach (var i in list)
                 {
@@ -220,17 +344,16 @@ namespace Task
                         if (someoneOnPath)
                             continue;
                         else
-                            _game._possibleActions[this].Add(new Tuple<Action<Player, int>, int>((p, o) => MoveFromHouseToHallway(this, i), i));
-                                
+                            _possibleActions.Add(new Tuple<Action<Player, int>, int>((p, o) => MoveFromHouseToHallway(this, i), i));
                     }
                     else
                     {
                         /*right to left*/
                         var someoneOnPath = _game._hallway.Skip(i).Take(_currentHouse._houseEntry - i).Any(o => o != null);
                         if (someoneOnPath)
-                            return;
+                            continue;
                         else
-                            _game._possibleActions[this].Add(new Tuple<Action<Player, int>, int>((p, o) => MoveFromHouseToHallway(this, i), i));
+                            _possibleActions.Add(new Tuple<Action<Player, int>, int>((p, o) => MoveFromHouseToHallway(this, i), i));
 
                     }
                 }
@@ -242,8 +365,9 @@ namespace Task
         public void MoveFromHallwayToHouse(Player player, int housePosition)
         {
             var hallwaypos = Array.IndexOf(_game._hallway, player);
-            var distance  = Math.Abs(_destinationHouse._houseEntry - housePosition);
-            distance += housePosition == 0 ? 1 : 2;
+            var distance  = Math.Abs(_destinationHouse._houseEntry - hallwaypos);
+            var hp = housePosition == 0 ? 1 : 2;
+            distance = distance + hp; 
             var p = _game._hallway[hallwaypos];
             _game._hallway[hallwaypos] = null;
             this._destinationHouse._house[housePosition] = p;
@@ -255,12 +379,24 @@ namespace Task
         {
             var housePos = Array.IndexOf(_currentHouse._house, player);
             var distance = Math.Abs(_currentHouse._houseEntry - hallwayPos);
-            distance += housePos == 0 ? 1 : 2;
+            var hp = housePos == 0 ? 1 : 2;
+            distance = distance + hp; 
             var p = _currentHouse._house[housePos];
             _game._hallway[hallwayPos] = p;
             this._currentHouse._house[housePos] = null;
             _game._energy += distance * this._type;
-
+        }
+        public void MoveFromHouseToHouse(Player player, int destinationaHousePos)
+        {
+            var housePos = Array.IndexOf(_currentHouse._house, player);
+            var distance = Math.Abs(_currentHouse._houseEntry - _destinationHouse._houseEntry);
+            var house = housePos == 0 ? 1 : 2;
+            var dHouse = destinationaHousePos == 0 ? 1 : 2;
+            distance = distance + house + dHouse;
+            var p = _currentHouse._house[housePos];
+            player._destinationHouse._house[destinationaHousePos] = p;
+            this._currentHouse._house[housePos] = null;
+            _game._energy += distance * this._type;
         }
     }
 
@@ -269,8 +405,6 @@ namespace Task
         public int _houseEntry; 
         public Player[] _house = new Player[2];
     }
-
-
 
     public static class ObjectExtensions
     {
