@@ -11,12 +11,14 @@ namespace Task
     {
         public static Dictionary<string, int> _regiseters = new Dictionary<string, int>();
         public static int[] _input = new int[14];
-        public static int _inputCount = 0;
+
+        public static int[] _x = new int[14];
+        public static int[] _y = new int[14];
+        public static int[] _z = new int[14];
+        public static List<String> _validResults = new List<String>();
+
+
         public static List<Segment> _segments = new List<Segment>();
-
-
-
-
 
         static void Main(string[] args)
         {
@@ -30,108 +32,57 @@ namespace Task
             }
 
 
-            for (int s = 14; s > 0; s--)
-            {
-              
-                var sLines = _segments[s-1]._lines;
-                var validRange = new List<int>();
-                validRange.Add(0);
-                if (s<14)
-                    validRange = _segments[s].combinationswZ.Select(o => o.Item1).ToList();
+            _x = _segments.Select(o => int.Parse(o._lines.Skip(5).Take(1).First().Split(" ")[2])).ToArray(); 
+            _y = _segments.Select(o => int.Parse(o._lines.Skip(15).Take(1).First().Split(" ")[2])).ToArray();
+            _z = _segments.Select(o => int.Parse(o._lines.Skip(4).Take(1).First().Split(" ")[2])).ToArray();
 
 
-
-               int leftz = 0; int rightz = 0;
-                if (s < 14)
-                {
-                    leftz = _segments[s].minz();
-                    rightz = _segments[s].maxz();
-                }
-
-                for (int z = 0; z < 10000; z++)
-                    for (int w = 0; w < 10; w++)
-                    {
-                        _regiseters["x"] = 0;
-                        _regiseters["y"] = 0;
-                        _regiseters["z"] = z;
-                        _input[0] = w;
-
-                        foreach (var ssLines in sLines)
-                        {
-                            ParseLine(ssLines);
-                        }
-
-                        if ( )
-                        {
-                            _segments[s-1].combinationswZ.Add(new Tuple<int, int>(z, w));
-                        }
-
-                    }
-            }
-            
-        
-
-            Console.WriteLine("Result is {0}", _input);
+            searchdigits(0, 0, "");
 
         }
 
 
-        
-
-
-        public static void ParseLine(String line)
+        public static void searchdigits(int depth, long z,  string result)
         {
+            Console.WriteLine(depth);
 
-            if (line.StartsWith("inp"))
+            if (depth == 14)
             {
-                _regiseters[line.Split(" ")[1]] = _input[_inputCount];
+                if (z == 0)
+                {
+                    _validResults.Add(result);
+                }
+                return;
+            }
+          
+
+            for (int i = 9; i > 0; i--)
+            {
+
+                result = result + i.ToString();
+                var newz = calculateZ(depth, z, i);
+                if (newz == long.MaxValue)
+                    continue;
+
+                searchdigits(depth + 1, newz, result);
+
+            }
+            return;
+        }
+
+
+        public static long calculateZ(int depth, long z, int w)
+        {
+            if (_z[depth] == 26)
+            {
+                if (z % 26 + _x[depth] != w)
+                    return long.MaxValue;
             }
 
-            if (line.StartsWith("add"))
-            {
-                var value = 0;
-                var reg = line.Split(" ")[1];
-                var token = line.Split(" ")[2];
-                value = int.TryParse(token, out value) ? value : _regiseters[token];
-                _regiseters[reg] = _regiseters[reg] + value;
-            }
-
-            if (line.StartsWith("mul"))
-            {
-                var value = 0;
-                var reg = line.Split(" ")[1];
-                var token = line.Split(" ")[2];
-                value = int.TryParse(token, out value) ? value : _regiseters[token];
-                _regiseters[reg] = _regiseters[reg] * value;
-            }
-
-            if (line.StartsWith("mod"))
-            {
-                var value = 0;
-                var reg = line.Split(" ")[1];
-                var token = line.Split(" ")[2];
-                value = int.TryParse(token, out value) ? value : _regiseters[token];
-                _regiseters[reg] = _regiseters[reg] % value;
-            }
-
-            if (line.StartsWith("div"))
-            {
-                var value = 0;
-                var reg = line.Split(" ")[1];
-                var token = line.Split(" ")[2];
-                value = int.TryParse(token, out value) ? value : _regiseters[token];
-                _regiseters[reg] = _regiseters[reg] / value;
-            }
-
-            if (line.StartsWith("eql"))
-            {
-                var value = 0;
-                var reg = line.Split(" ")[1];
-                var token = line.Split(" ")[2];
-                value = int.TryParse(token, out value) ? value : _regiseters[token];
-                _regiseters[reg] = _regiseters[reg] == value ? 1 : 0;
-            }
-
+            if (_z[depth] == 26)
+                return z / 26;
+            else
+                return z * 26 + _y[depth] + w;
         }
 
         public class Segment
@@ -148,6 +99,12 @@ namespace Task
                 return combinationswZ.Select(o => o.Item1).Max();
             }
         }
+
+
+
+
+
+
 
 
 
