@@ -39,8 +39,9 @@ namespace Task
             char[] array = new char[14]; 
             searchdigits(0, 0, array);
 
-            var max = _validResults.Select(o => long.Parse(o)).Max();
-            Console.WriteLine("Result is {0}", max);
+            var min = _validResults.Select(o => long.Parse(o)).Min();
+            Console.WriteLine("Result is {0}",min);
+            Console.ReadKey();
 
         }
 
@@ -90,16 +91,7 @@ namespace Task
         public class Segment
         {
             public String[] _lines;
-            public List<Tuple<int, int>> combinationswZ = new List<Tuple<int, int>>();
-            public int minz()
-            {
-                return combinationswZ.Select(o => o.Item1).Min();
-            }
-
-            public int maxz()
-            {
-                return combinationswZ.Select(o => o.Item1).Max();
-            }
+          
         }
 
 
