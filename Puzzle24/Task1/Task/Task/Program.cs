@@ -36,21 +36,22 @@ namespace Task
             _y = _segments.Select(o => int.Parse(o._lines.Skip(15).Take(1).First().Split(" ")[2])).ToArray();
             _z = _segments.Select(o => int.Parse(o._lines.Skip(4).Take(1).First().Split(" ")[2])).ToArray();
 
+            char[] array = new char[14]; 
+            searchdigits(0, 0, array);
 
-            searchdigits(0, 0, "");
+            var mxx = _validResults.Select(o => long.Parse(o)).Min();
 
         }
 
 
-        public static void searchdigits(int depth, long z,  string result)
+        public static void searchdigits(int depth, long z, char[] array)
         {
-            Console.WriteLine(depth);
 
             if (depth == 14)
             {
                 if (z == 0)
                 {
-                    _validResults.Add(result);
+                    _validResults.Add(new string(array));
                 }
                 return;
             }
@@ -59,12 +60,12 @@ namespace Task
             for (int i = 9; i > 0; i--)
             {
 
-                result = result + i.ToString();
+                array[depth] = i.ToString().ToCharArray().First();
                 var newz = calculateZ(depth, z, i);
                 if (newz == long.MaxValue)
                     continue;
 
-                searchdigits(depth + 1, newz, result);
+                searchdigits(depth + 1, newz, array.ToArray());
 
             }
             return;
